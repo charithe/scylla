@@ -1,0 +1,41 @@
+---
+- name: gibberish string
+  input: |
+    some string
+  expected_err: |-
+    Parse failure [Pos=0 Context='']
+- name: invalid field name
+  input: |
+    { 123field }
+  expected_err: |-
+    Parse failure [Pos=2 Context='{ ']
+- name: straggler closing brace
+  input: |
+    { field }}
+  expected_err: |-
+    Parse failure [Pos=9 Context='{ field }']
+- name: unclosed brace
+  input: |
+    { field 
+  expected_err: |-
+    Unexpected EOF
+- name: unclosed parentheses
+  input: |
+    { field (arg: "hello" } 
+  expected_err: |-
+    Parse failure [Pos=22 Context='{ field (arg: "hello" ']
+- name: unterminated string
+  input: |
+    { field (arg: "hello \"world\") } 
+  expected_err: |-
+    Parse failure [Pos=34 Context='... arg: "hello \"world\") } ']
+- name: invalid float
+  input: |
+    { field (arg: 23.s24) } 
+  expected_err: |-
+    Parse failure [Pos=16 Context='{ field (arg: 23']
+#- name: invalid int
+#  input: |
+#    { field (arg1: 23x24, arg2: 42) } 
+#  expected_err: |-
+#    Parse failure [Pos=19 Context='{ field (arg: 23x24']

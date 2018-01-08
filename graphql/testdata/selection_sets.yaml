@@ -1,0 +1,409 @@
+---
+- name: empty selection set
+  input: |
+    {}
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": null }
+    ]}
+- name: simple selection set
+  input: |
+    { field_1 field2 field3_A }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"", "Name":"field_1", "Args": null, "Directives": null, "Selections": null}, 
+        {"Alias":"", "Name":"field2", "Args": null, "Directives": null, "Selections": null}, 
+        {"Alias":"", "Name":"field3_A", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with alias
+  input: |
+    { alias: field1 field2 another_alias:field3}
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {"Alias":"", "Name":"field2", "Args": null, "Directives": null, "Selections": null}, 
+        {"Alias":"another_alias", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with mixed separators
+  input: |
+    { alias: field1, 
+    field2 another_alias:field3
+    }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {"Alias":"", "Name":"field2", "Args": null, "Directives": null, "Selections": null}, 
+        {"Alias":"another_alias", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with variable arguments
+  input: |
+    { alias: field1, field2(arg1: $variable1, arg2:$variable2) field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {
+          "Alias":"", 
+          "Name":"field2", 
+          "Args": [
+            {"Key":"arg1", "Value": {"Name": "variable1"}}, 
+            {"Key":"arg2", "Value": {"Name": "variable2"}}
+          ], 
+          "Directives": null, 
+          "Selections": null
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with int arguments
+  input: |
+    { alias: field1, field2(arg1: 42, arg2:-42) field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {
+          "Alias":"", 
+          "Name":"field2", 
+          "Args": [
+            {"Key":"arg1", "Value": {"Val": 42}}, 
+            {"Key":"arg2", "Value": {"Val": -42}}
+          ], 
+          "Directives": null, 
+          "Selections": null
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with float arguments
+  input: |
+    { alias: field1, field2(arg1: 42.65, arg2:-4.2e+1) field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {
+          "Alias":"", 
+          "Name":"field2", 
+          "Args": [
+            {"Key":"arg1", "Value": {"Val": 42.65}}, 
+            {"Key":"arg2", "Value": {"Val": -42.0}}
+          ], 
+          "Directives": null, 
+          "Selections": null
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with string arguments
+  input: |
+    { alias: field1, field2(arg1: "hello world 42", arg2: "hello\t\"world\"\u003f") field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {
+          "Alias":"", 
+          "Name":"field2", 
+          "Args": [
+            {"Key":"arg1", "Value": {"Val": "hello world 42"}}, 
+            {"Key":"arg2", "Value": {"Val": "hello\\t\\\"world\\\"\\u003f"}}
+          ],
+          "Directives": null, 
+          "Selections": null
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with boolean arguments
+  input: |
+    { alias: field1, field2(arg1: true, arg2: false) field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {
+          "Alias":"", 
+          "Name":"field2", "Args": [
+            {"Key":"arg1", "Value": {"Val": true}}, 
+            {"Key":"arg2", "Value": {"Val": false}}
+          ], 
+          "Directives": null, 
+          "Selections": null
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with null arguments
+  input: |
+    { alias: field1, field2(arg1: null, arg2: null) field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {
+          "Alias":"", 
+          "Name":"field2", 
+          "Args": [
+            {"Key":"arg1", "Value": {}}, 
+            {"Key":"arg2", "Value": {}}
+          ], 
+          "Directives": null, 
+          "Selections": null
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with enum arguments
+  input: |
+    { alias: field1, field2(arg1: HELLO, arg2: world) field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {
+          "Alias":"", 
+          "Name":"field2", 
+          "Args": [
+            {"Key":"arg1", "Value": {"Val": "HELLO"}}, 
+            {"Key":"arg2", "Value": {"Val": "world"}}
+          ], 
+          "Directives": null, 
+          "Selections": null
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with int list arguments
+  input: |
+    { alias: field1, field2(arg1: [12, 24, 48,,], arg2: [12 24 48]) field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {
+          "Alias":"", 
+          "Name":"field2", 
+          "Args": [
+            {"Key":"arg1", "Value": {"Items": [{"Val": 12}, {"Val": 24}, {"Val": 48}]}}, 
+            {"Key":"arg2", "Value": {"Items": [{"Val": 12}, {"Val": 24}, {"Val": 48}]}}
+          ], 
+          "Directives": null, 
+          "Selections": null
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with nested list and empty list arguments
+  input: |
+    { alias: field1, field2(arg1: [["item1", "item2"], ["item3", "item4"]], arg2: []) field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {
+          "Alias":"", 
+          "Name":"field2", 
+          "Args": [
+            {
+              "Key":"arg1", 
+              "Value": {
+                "Items": [
+                  {"Items": [{"Val": "item1"}, {"Val": "item2"}]}, 
+                  {"Items": [{"Val": "item3"}, {"Val": "item4"}]}
+                ]
+              }
+            }, 
+            {
+              "Key":"arg2", 
+              "Value": {
+                "Items": null
+              }
+            }
+          ], 
+          "Directives": null, 
+          "Selections": null
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+
+- name: selection set with object arguments
+  input: |
+    { alias: field1, field2(arg1: {k1: 1, k2: "hello"}, arg2: {k3: 12.45, k4: null}) field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {
+          "Alias":"", 
+          "Name":"field2", 
+          "Args": [
+            {
+              "Key":"arg1", 
+              "Value": {
+                "Items": {
+                  "k1": {"Val": 1}, 
+                  "k2": {"Val": "hello"}
+                }
+              }
+            }, 
+            {
+              "Key":"arg2", 
+              "Value": {
+                "Items": {
+                  "k3": {"Val": 12.45}, 
+                  "k4": {}
+                }
+              }
+            }
+          ], 
+          "Directives": null, 
+          "Selections": null
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with nested object arguments
+  input: |
+    { alias: field1, field2(arg1: {k1: { k11: 42, k12:24 }, k2: "hello"}, arg2: {k3: 12.45, k4: null}) field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {
+          "Alias":"", 
+          "Name":"field2", 
+          "Args": [
+            {
+              "Key":"arg1", 
+              "Value": {
+                "Items": {
+                  "k1": {
+                    "Items": {
+                      "k11": {"Val": 42}, 
+                      "k12": {"Val": 24}
+                    }
+                  }, 
+                  "k2": {
+                    "Val": "hello"
+                  }
+                }
+              }
+            }, 
+            {
+              "Key":"arg2", 
+              "Value": {
+                "Items": {
+                  "k3": {"Val": 12.45}, 
+                  "k4": {}
+                }
+              }
+            }
+          ], 
+          "Directives": null, 
+          "Selections": null
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with directives
+  input: |
+    { alias: field1, field2(arg: 42) @dir1 @dir2(dirarg1: 12, dirarg2: $var) field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {"Alias":"alias", "Name":"field1", "Args": null, "Directives": null, "Selections": null}, 
+        {
+          "Alias":"", 
+          "Name":"field2", 
+          "Args": [
+            {"Key":"arg", "Value": {"Val": 42}} 
+          ], 
+          "Directives": [
+            {"Name": "dir1", "Args": null},
+            {
+              "Name": "dir2", 
+              "Args": [
+                {"Key": "dirarg1", "Value": {"Val": 12}},
+                {"Key": "dirarg2", "Value": {"Name": "var"}}
+              ]
+            }
+          ], 
+          "Selections": null
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+- name: selection set with field selections
+  input: |
+    { alias: field1 { a:field1_1 }, field2(arg: 42) @dir1 @dir2(dirarg1: 12, dirarg2: $var){field2_1 field2_2(arg: 42) @dir3} field3 }
+  expected_val: |
+    {"SelectionSets":[
+      {"Fields": [
+        {
+          "Alias":"alias", 
+          "Name":"field1", 
+          "Args": null, 
+          "Directives": null, 
+          "Selections": {
+            "Fields": [
+              {
+                "Alias":"a",
+                "Name":"field1_1",
+                "Args": null,
+                "Directives": null,
+                "Selections": null
+              }
+            ]
+          }
+        }, 
+        {
+          "Alias":"", 
+          "Name":"field2", 
+          "Args": [
+            {"Key":"arg", "Value": {"Val": 42}} 
+          ], 
+          "Directives": [
+            {"Name": "dir1", "Args": null},
+            {
+              "Name": "dir2", 
+              "Args": [
+                {"Key": "dirarg1", "Value": {"Val": 12}},
+                {"Key": "dirarg2", "Value": {"Name": "var"}}
+              ]
+            }
+          ], 
+          "Selections": {
+            "Fields": [
+              {
+                "Alias":"",
+                "Name":"field2_1",
+                "Args": null,
+                "Directives": null,
+                "Selections": null
+              },
+              {
+                "Alias":"",
+                "Name":"field2_2",
+                "Args": [
+                  {"Key":"arg", "Value": {"Val": 42}} 
+                ], 
+                "Directives": [
+                  {"Name": "dir3", "Args": null}
+                ],
+                "Selections": null
+              }
+            ]
+          }
+        }, 
+        {"Alias":"", "Name":"field3", "Args": null, "Directives": null, "Selections": null}
+      ]}
+    ]}
+
